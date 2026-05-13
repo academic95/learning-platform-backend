@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +13,11 @@ use Illuminate\Database\Eloquent\Model;
     'description',
     'duration_hours',
     'is_mandatory',
-    'topics_count',
 ])]
 class Course extends Model
 {
+    use HasFactory;
+
     public function topics(): HasMany
     {
         return $this->hasMany(CourseTopic::class);
@@ -48,7 +50,6 @@ class Course extends Model
         return [
             'duration_hours' => 'integer',
             'is_mandatory' => 'boolean',
-            'topics_count' => 'integer',
         ];
     }
 }

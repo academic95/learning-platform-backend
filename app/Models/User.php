@@ -40,12 +40,12 @@ class User extends Authenticatable
 
     public function isEmployee(): bool
     {
-        return $this->role === UserRole::Employee;
+        return $this->role === UserRole::EMPLOYEE;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === UserRole::Admin;
+        return $this->role === UserRole::ADMIN;
     }
 
     /**

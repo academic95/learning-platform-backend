@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('description');
             $table->unsignedInteger('duration_hours');
             $table->boolean('is_mandatory')->default(false);
-            $table->unsignedInteger('topics_count')->default(0);
             $table->timestamps();
         });
     }

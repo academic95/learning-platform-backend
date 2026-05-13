@@ -13,7 +13,22 @@ return new class extends Migration
     {
         Schema::create('topic_progress', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('course_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('course_topic_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->timestamp('completed_at')->useCurrent();
             $table->timestamps();
+
+            $table->unique(['user_id', 'course_topic_id']);
         });
     }
 

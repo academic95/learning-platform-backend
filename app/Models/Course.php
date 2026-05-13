@@ -26,6 +26,11 @@ class Course extends Model
         return $this->hasMany(CourseEnrollment::class);
     }
 
+    public function topicProgress(): HasMany
+    {
+        return $this->hasMany(TopicProgress::class);
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'course_enrollments')

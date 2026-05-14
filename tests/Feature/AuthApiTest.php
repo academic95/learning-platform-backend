@@ -88,6 +88,27 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('message', 'Невірний email або пароль');
     }
 
+    // Тест для перевірки обмеження кількості спроб входу
+    public function test_login_is_rate_limited_after_too_many_attempts(): void
+    {
+        User::factory()->create([
+            'email' => 'test@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->postJson('/api/auth/login', [
+                'email' => 'test@example.com',
+                'password' => 'wrong-password',
+            ])->assertUnauthorized();
+        }
+
+        $this->postJson('/api/auth/login', [
+            'email' => 'test@example.com',
+            'password' => 'wrong-password',
+        ])->assertTooManyRequests();
+    }
+
     public function test_authenticated_user_can_view_profile(): void
     {
         $user = User::factory()->admin()->create();

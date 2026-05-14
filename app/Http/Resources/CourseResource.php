@@ -20,6 +20,7 @@ class CourseResource extends JsonResource
             'description' => $this->description,
             'duration_hours' => $this->duration_hours,
             'is_mandatory' => $this->is_mandatory,
+            'is_enrolled' => (bool) ($this->is_enrolled ?? false),
             'topics_count' => $this->whenCounted('topics'),
         ];
     }

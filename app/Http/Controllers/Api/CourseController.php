@@ -13,17 +13,23 @@ class CourseController extends Controller
 {
     public function index(CourseIndexRequest $request): JsonResponse
     {
+        $user = $request->user();
+
         // Стврорюємо унікальний ключ для кешу на основі параметрів запиту
         $cacheKey = sprintf(
-            'courses:list:v2:page:%s:per_page:%s',
+            'courses:list:v3:user:%s:page:%s:per_page:%s',
+            $user->id,
             $request->validated('page', 1),
             $request->perPage(),
         );
 
         // Використовуємо кеш для збереження результату
-        $response = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
+        $response = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request, $user) {
             $courses = Course::query()
                 ->withCount('topics')
+                ->withExists([
+                    'enrollments as is_enrolled' => fn ($query) => $query->where('user_id', $user->id),
+                ])
                 ->latest()
                 ->paginate($request->perPage());
 

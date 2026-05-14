@@ -21,6 +21,11 @@ class CourseApiTest extends TestCase
 
         $courses = Course::factory()->count(3)->create();
         CourseTopic::factory()->count(2)->create(['course_id' => $courses->first()->id]);
+        CourseEnrollment::create([
+            'user_id' => $user->id,
+            'course_id' => $courses->first()->id,
+            'progress' => 0,
+        ]);
 
         $response = $this->getJson('/api/courses?per_page=2');
 
@@ -32,11 +37,34 @@ class CourseApiTest extends TestCase
             ->assertJsonPath('meta.total', 3)
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id', 'title', 'description', 'duration_hours', 'is_mandatory', 'topics_count'],
+                    '*' => ['id', 'title', 'description', 'duration_hours', 'is_mandatory', 'is_enrolled', 'topics_count'],
                 ],
                 'meta' => ['current_page', 'per_page', 'total', 'last_page', 'from', 'to'],
                 'links' => ['first', 'last', 'prev', 'next'],
             ]);
+
+    }
+
+    public function test_courses_index_shows_enrollment_status_for_current_user(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $enrolledCourse = Course::factory()->create();
+        $notEnrolledCourse = Course::factory()->create();
+
+        CourseEnrollment::create([
+            'user_id' => $user->id,
+            'course_id' => $enrolledCourse->id,
+            'progress' => 0,
+        ]);
+
+        $response = $this->getJson('/api/courses?per_page=10');
+
+        $courses = collect($response->json('data'))->keyBy('id');
+
+        $this->assertTrue($courses[$enrolledCourse->id]['is_enrolled']);
+        $this->assertFalse($courses[$notEnrolledCourse->id]['is_enrolled']);
     }
 
     public function test_courses_index_validates_pagination(): void

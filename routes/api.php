@@ -16,6 +16,6 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/courses', [CourseController::class, 'index']);
-
     Route::post('/courses/{course}/enroll', [CourseEnrollmentController::class, 'store']);
+    Route::get('/users/me/courses', [CourseEnrollmentController::class, 'index']);
 });

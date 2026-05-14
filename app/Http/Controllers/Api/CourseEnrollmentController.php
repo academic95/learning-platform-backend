@@ -3,13 +3,26 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MyCourseResource;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CourseEnrollmentController extends Controller
 {
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $enrollments = $request->user()
+            ->courseEnrollments()
+            ->with('course')
+            ->latest('enrolled_at')
+            ->get();
+
+        return MyCourseResource::collection($enrollments);
+    }
+
     public function store(Request $request, Course $course): JsonResponse
     {
         $user = $request->user();

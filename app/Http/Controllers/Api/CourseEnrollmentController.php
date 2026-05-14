@@ -3,24 +3,40 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Course\MyCoursesIndexRequest;
 use App\Http\Resources\MyCourseResource;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CourseEnrollmentController extends Controller
 {
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(MyCoursesIndexRequest $request): JsonResponse
     {
         $enrollments = $request->user()
             ->enrollments()
             ->with('course')
             ->latest('enrolled_at')
-            ->get();
+            ->paginate($request->perPage());
 
-        return MyCourseResource::collection($enrollments);
+        return response()->json([
+            'data' => MyCourseResource::collection($enrollments->getCollection()),
+            'meta' => [
+                'current_page' => $enrollments->currentPage(),
+                'per_page' => $enrollments->perPage(),
+                'total' => $enrollments->total(),
+                'last_page' => $enrollments->lastPage(),
+                'from' => $enrollments->firstItem(),
+                'to' => $enrollments->lastItem(),
+            ],
+            'links' => [
+                'first' => $enrollments->url(1),
+                'last' => $enrollments->url($enrollments->lastPage()),
+                'prev' => $enrollments->previousPageUrl(),
+                'next' => $enrollments->nextPageUrl(),
+            ],
+        ]);
     }
 
     public function store(Request $request, Course $course): JsonResponse

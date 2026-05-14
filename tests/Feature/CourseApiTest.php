@@ -67,6 +67,23 @@ class CourseApiTest extends TestCase
         $this->assertFalse($courses[$notEnrolledCourse->id]['is_enrolled']);
     }
 
+    public function test_courses_index_cache_is_invalidated_after_course_is_created(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        Course::factory()->create();
+
+        $this->getJson('/api/courses?per_page=10')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1);
+
+        Course::factory()->create();
+
+        $this->getJson('/api/courses?per_page=10')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 2);
+    }
+
     public function test_courses_index_validates_pagination(): void
     {
         Sanctum::actingAs(User::factory()->create());

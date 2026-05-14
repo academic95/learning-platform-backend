@@ -18,6 +18,12 @@ class CourseTopic extends Model
 {
     use HasFactory;
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => Course::bumpListCacheVersion());
+        static::deleted(fn () => Course::bumpListCacheVersion());
+    }
+
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);

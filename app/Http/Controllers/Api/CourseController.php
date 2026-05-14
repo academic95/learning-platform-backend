@@ -17,7 +17,8 @@ class CourseController extends Controller
 
         // Стврорюємо унікальний ключ для кешу на основі параметрів запиту
         $cacheKey = sprintf(
-            'courses:list:v3:user:%s:page:%s:per_page:%s',
+            'courses:list:v4:version:%s:user:%s:page:%s:per_page:%s',
+            Course::listCacheVersion(),
             $user->id,
             $request->validated('page', 1),
             $request->perPage(),

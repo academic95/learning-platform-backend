@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 #[Fillable([
     'title',
@@ -17,6 +18,15 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     use HasFactory;
+
+    // Ключ для зберігання версії кешу списку курсів, щоб ефективно інвалідовувати кеш при змінах
+    public const LIST_CACHE_VERSION_KEY = 'courses:list:version';
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => self::bumpListCacheVersion());
+        static::deleted(fn () => self::bumpListCacheVersion());
+    }
 
     public function topics(): HasMany
     {
@@ -51,5 +61,17 @@ class Course extends Model
             'duration_hours' => 'integer',
             'is_mandatory' => 'boolean',
         ];
+    }
+
+    public static function listCacheVersion(): int
+    {
+        return (int) Cache::get(self::LIST_CACHE_VERSION_KEY, 1);
+    }
+
+    public static function bumpListCacheVersion(): int
+    {
+        Cache::add(self::LIST_CACHE_VERSION_KEY, 1);
+
+        return Cache::increment(self::LIST_CACHE_VERSION_KEY);
     }
 }

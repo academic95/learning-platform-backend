@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class CourseEnrollment extends Model
 {
+    protected static function booted(): void
+    {
+        static::saved(fn () => Course::bumpListCacheVersion());
+        static::deleted(fn () => Course::bumpListCacheVersion());
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

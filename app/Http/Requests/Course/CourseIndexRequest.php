@@ -30,6 +30,6 @@ class CourseIndexRequest extends FormRequest
 
     public function perPage(): int
     {
-        return (int) $this->validated('per_page', 5);
+        return (int) $this->validated('per_page', 15);
     }
 }

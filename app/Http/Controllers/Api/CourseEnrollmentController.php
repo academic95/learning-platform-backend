@@ -55,12 +55,12 @@ class CourseEnrollmentController extends Controller
 
         if (! $enrollment->wasRecentlyCreated) {
             return response()->json([
-                'message' => 'Already enrolled in this course',
+                'message' => 'Ви вже записані на цей курс',
             ], 409);
         }
 
         return response()->json([
-            'message' => 'Successfully enrolled',
+            'message' => 'Ви успішно записались на курс',
             'course' => MyCourseResource::make($enrollment->load('course')),
         ], 201);
 

@@ -39,7 +39,7 @@ class AuthController extends Controller
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json([
-                'message' => 'Invalid credentials',
+                'message' => 'Невірний email або пароль',
             ], 401);
 
         }
@@ -66,7 +66,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message' => 'Logged out successfully',
+            'message' => 'Ви успішно вийшли з системи',
         ]);
     }
 

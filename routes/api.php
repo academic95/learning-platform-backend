@@ -16,10 +16,14 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->scopeBindings()->group(function () {
+    // Круси
     Route::get('/courses', [CourseController::class, 'index']);
+    // Запис на курс
     Route::post('/courses/{course}/enroll', [CourseEnrollmentController::class, 'store']);
+    // Список курсів, на які записаний користувач
     Route::get('/users/me/courses', [CourseEnrollmentController::class, 'index']);
-
+    // Теми курсу
     Route::get('/courses/{course}/topics', [CourseTopicController::class, 'index']);
+    // Позначити тему як виконану
     Route::post('/courses/{course}/topics/{topic}/complete', [CourseTopicController::class, 'complete']);
 });

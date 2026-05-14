@@ -8,7 +8,6 @@ use App\Models\Course;
 use App\Models\CourseEnrollment;
 use App\Models\CourseTopic;
 use App\Models\TopicProgress;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,7 +19,7 @@ class CourseTopicController extends Controller
         $user = $request->user();
         $topics = $course->topics()
             ->with([
-                'progress' => function (Builder $query) use ($user) {
+                'progress' => function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 },
             ])
@@ -41,7 +40,7 @@ class CourseTopicController extends Controller
 
         if (! $enrollment) {
             return response()->json([
-                'message' => 'You are not enrolled in this course',
+                'message' => 'Ви не записані на цей курс',
             ], 403);
         }
 
@@ -66,7 +65,7 @@ class CourseTopicController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Topic completed',
+            'message' => 'Тему успішно завершено',
             'progress' => $progress,
             'completed_at' => $topicProgress->completed_at,
         ]);

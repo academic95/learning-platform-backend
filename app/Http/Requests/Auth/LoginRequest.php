@@ -27,4 +27,21 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Переклад повідомлень про помилки валідації
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Вкажіть email',
+            'email.email' => 'Вкажіть коректний email',
+            'email.max' => 'Email не може бути довшим за 255 символів',
+            'password.required' => 'Вкажіть пароль',
+            'password.string' => 'Пароль має бути текстом',
+            'password.max' => 'Пароль не може бути довшим за 255 символів',
+        ];
+    }
 }

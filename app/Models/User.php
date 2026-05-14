@@ -21,7 +21,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    public function courseEnrollments(): HasMany
+    public function enrollments(): HasMany
     {
         return $this->hasMany(CourseEnrollment::class);
     }

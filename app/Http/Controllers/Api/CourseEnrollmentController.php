@@ -15,7 +15,7 @@ class CourseEnrollmentController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $enrollments = $request->user()
-            ->courseEnrollments()
+            ->enrollments()
             ->with('course')
             ->latest('enrolled_at')
             ->get();
@@ -26,26 +26,27 @@ class CourseEnrollmentController extends Controller
     public function store(Request $request, Course $course): JsonResponse
     {
         $user = $request->user();
-        $exists = CourseEnrollment::query()
-            ->where('user_id', $user->id)
-            ->where('course_id', $course->id)
-            ->exists();
 
-        if ($exists) {
+        $enrollment = CourseEnrollment::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'course_id' => $course->id,
+            ],
+            [
+                'progress' => 0,
+            ],
+        );
+
+        if (! $enrollment->wasRecentlyCreated) {
             return response()->json([
                 'message' => 'Already enrolled in this course',
             ], 409);
         }
 
-        CourseEnrollment::create([
-            'user_id' => $user->id,
-            'course_id' => $course->id,
-            'progress' => 0,
-        ]);
-
         return response()->json([
             'message' => 'Successfully enrolled',
-        ]);
+            'course' => MyCourseResource::make($enrollment->load('course')),
+        ], 201);
 
     }
 }

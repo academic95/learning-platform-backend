@@ -22,14 +22,5 @@ docker-compose exec app composer install
 docker-compose exec app php artisan key:generate
 docker-compose exec app php artisan migrate:fresh --seed
 
-
-Test users
-- Admin:
-  - Email: admin@example.com
-  - Password: password
-
-- User:
-  - Email: user@example.com
-  - Password: password
-
 Authorization: Bearer {token}
+```
